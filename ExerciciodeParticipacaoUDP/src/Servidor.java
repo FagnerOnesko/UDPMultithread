@@ -14,17 +14,37 @@ public class Servidor {
     
     public static InetAddress endereco;
     
-    public static void main(String[] args) {
+   public static void main(String[] args) {
+        
+        try { 
+        
+            dgSocket = new DatagramSocket(10000);
+        
+            byte[] msg = new byte[128];
             
-        try {
-            while (true) {
-                dgSocket = new DatagramSocket(10000);
-                System.out.println("Aguardando requisições...");
-                // instanciar thread
-                new ThreadServidor(dgSocket).start();
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+            dgPacket = new DatagramPacket(msg, msg.length);
+            
+            System.out.println("Servidor pronto...");
+            
+            dgSocket.receive(dgPacket);
+            
+            String texto = new String(dgPacket.getData());
+            texto = texto.toUpperCase();
+                
+            endereco = dgPacket.getAddress();
+            int porta = dgPacket.getPort();
+
+            System.out.println("Porta = "+porta);                
+
+            msg = new byte[128];                
+            msg = texto.getBytes();
+
+            dgPacket = new DatagramPacket(msg, msg.length, endereco, porta);                
+            dgSocket.send(dgPacket);
+               
+            
+        } catch(Exception e) {
+            
         }
     }
 }
