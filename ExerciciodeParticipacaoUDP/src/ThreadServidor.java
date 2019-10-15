@@ -2,14 +2,14 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 
 
 public class ThreadServidor  extends Thread{
     DatagramSocket dps;
-    DataInputStream entrada;
-    DataOutputStream saida;
     
     public ThreadServidor(DatagramSocket dgSocket) {
         dps = dgSocket;
@@ -19,13 +19,21 @@ public class ThreadServidor  extends Thread{
         try {
             System.out.println("Executando thread...");
 
+            byte[] msg = new byte[128];
             //entrada = new DataInputStream(dps.getInputStream());
-            String dadosUsuario = entrada.readUTF();
+            String texto = new String(Servidor.dgPacket.getData());
+            texto = texto.toUpperCase();
+                
+            Servidor.endereco = Servidor.dgPacket.getAddress();
+            int porta = Servidor.dgPacket.getPort();
 
-            dadosUsuario = dadosUsuario.toUpperCase();
+            System.out.println("Porta = "+porta);                
 
-            //saida = new DataOutputStream(cnx.getOutputStream());
-            saida.writeUTF(dadosUsuario);
+            msg = new byte[128];                
+            msg = texto.getBytes();
+
+            Servidor.dgPacket = new DatagramPacket(msg, msg.length, Servidor.endereco, porta);                
+            Servidor.dgSocket.send(Servidor.dgPacket);
             
         } catch (IOException ex) {
             ex.printStackTrace();

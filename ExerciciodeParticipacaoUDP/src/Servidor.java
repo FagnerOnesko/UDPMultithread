@@ -46,5 +46,19 @@ public class Servidor {
         } catch(Exception e) {
             
         }
+         try {
+          
+            dgSocket = new DatagramSocket(10000);
+        
+            while (true) {
+                byte[] msg = new byte[128];            
+                dgPacket = new DatagramPacket(msg, msg.length);
+                System.out.println("Servidor pronto...");
+                dgSocket.receive(dgPacket);
+                new ThreadServidor(dgSocket).start();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
